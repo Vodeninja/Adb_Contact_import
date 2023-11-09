@@ -1,82 +1,81 @@
 package com.redi.contact;
 
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import android.Manifest;
-import android.content.ContentProviderOperation;
-import android.content.ContentProviderResult;
-import android.content.ContentResolver;
-import android.content.ContentUris;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.util.Log;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 
 public class MainActivity extends AppCompatActivity {
+    private TextView logText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        String name = getIntent().getStringExtra("name");
-        String phoneNumber = getIntent().getStringExtra("phoneNumber");
+        logText = findViewById(R.id.log_text);
+        try {
+            File logFile = new File(getExternalFilesDir(null), "log.txt");
+            FileInputStream fis = new FileInputStream(logFile);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, 1);
-        } else {
-            addContact(getContentResolver(), name, phoneNumber);
+            StringBuilder fileContent = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                fileContent.append(line).append("\n");
+            }
+            br.close();
+
+            logText.setText(fileContent.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
-
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1) {
-                String name = getIntent().getStringExtra("name");
-                String phoneNumber = getIntent().getStringExtra("phoneNumber");
-                addContact(getContentResolver(), name, phoneNumber);
-            }
-
-    }
-
-
-
-    public void addContact(ContentResolver contentResolver, String name, String phoneNumber) {
-        ArrayList<ContentProviderOperation> ops = new ArrayList<>();
-
-
-        ops.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
-                .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
-                .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null)
-                .build());
-
-        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, name)
-                .build());
-
-        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phoneNumber)
-                .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE)
-                .build());
-
+    protected void onResume() {
+        super.onResume();
+        logText = findViewById(R.id.log_text);
         try {
-            ContentProviderResult[] results = contentResolver.applyBatch(ContactsContract.AUTHORITY, ops);
+            File logFile = new File(getExternalFilesDir(null), "log.txt");
+            FileInputStream fis = new FileInputStream(logFile);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
 
-            Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.parseLong(results[0].uri.getLastPathSegment()));
+            StringBuilder fileContent = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                fileContent.append(line).append("\n");
+            }
+            br.close();
 
+            logText.setText(fileContent.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void clearLog(View view) {
+        try {
+            File logFile = new File(getExternalFilesDir(null), "log.txt");
+            if (logFile.exists()) {
+                logFile.delete();
+                logText.setText("debug");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+
+
+
 }
+
