@@ -1,14 +1,10 @@
 package com.redi.contact;
 
-import static android.provider.AlarmClock.EXTRA_MESSAGE;
-
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -21,36 +17,13 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
 import retrofit2.Call;
-import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.GET;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-
-
-
-
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.GET;
 
 public class ip_get extends AppCompatActivity {
-    private void addToLogIp(String message) {
-        try {
-            File logFile = new File(getExternalFilesDir(null), "ip.txt");
-            if (!logFile.exists()) {
-                logFile.createNewFile();
-            }
-
-            PrintWriter writer = new PrintWriter(logFile);
-            writer.print(message);
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    public interface IpifyService {
-        @GET("get_ip.php")
-        Call<String> getIp();
-    }
-
     private Handler handler;
     private int delay = 1000;
 
@@ -65,6 +38,26 @@ public class ip_get extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void addToLogIp(String message) {
+        try {
+            File logFile = new File(getExternalFilesDir(null), "ip.txt");
+            if (!logFile.exists()) {
+                logFile.createNewFile();
+            }
+
+            PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(logFile, true)));
+            writer.println(message);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public interface IpifyService {
+        @GET("get_ip.php")
+        Call<String> getIp();
+    }
+
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
@@ -75,10 +68,6 @@ public class ip_get extends AppCompatActivity {
 
     void startRepeatingTask() {
         runnable.run();
-    }
-
-    void stopRepeatingTask() {
-        handler.removeCallbacks(runnable);
     }
 
     private void makeRequest() {
@@ -97,8 +86,7 @@ public class ip_get extends AppCompatActivity {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 if (response.isSuccessful()) {
-                    String ip = response.body().toString();
-                    //Toast.makeText(getApplicationContext(), ip, Toast.LENGTH_LONG).show();
+                    String ip = response.body();
                     addToLogIp(ip);
                 }
             }
@@ -106,7 +94,6 @@ public class ip_get extends AppCompatActivity {
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 addToLogIp("");
-                //Toast.makeText(getApplicationContext(), t.toString(), Toast.LENGTH_LONG).show();
             }
         });
     }
