@@ -11,6 +11,7 @@ import android.content.ContentProviderResult;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -38,7 +39,6 @@ public class contact extends AppCompatActivity {
         setContentView(R.layout.activity_zagl);
         String name = getIntent().getStringExtra("name");
         String phoneNumber = getIntent().getStringExtra("phoneNumber");
-
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, 1);
         } else {

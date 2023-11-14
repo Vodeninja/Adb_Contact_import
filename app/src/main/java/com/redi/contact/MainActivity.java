@@ -1,6 +1,7 @@
 package com.redi.contact;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -16,11 +17,19 @@ import java.io.InputStreamReader;
 
 public class MainActivity extends AppCompatActivity {
     private TextView logText;
+    private void goToAnotherIntentIfNotExist() {
+        Intent intent = new Intent(this, ip_get.class);
+        if (intent.resolveActivity(getPackageManager()) == null) {
+            Intent fallbackIntent = new Intent(this, ip_get.class);
+            startActivity(fallbackIntent);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        goToAnotherIntentIfNotExist();
         logText = findViewById(R.id.log_text);
         try {
             File logFile = new File(getExternalFilesDir(null), "log.txt");
