@@ -8,5 +8,7 @@ install adb
 
 use command
 `adb shell am start -n "com.redi.contact/com.redi.contact.contact" -e name "name" -e phoneNumber "number"`
-\nlogs: Android\data\com.redi.contact\files
+
+
+logs: Android\data\com.redi.contact\files
 
