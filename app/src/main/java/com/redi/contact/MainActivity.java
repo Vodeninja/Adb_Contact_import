@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -62,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        handler = new Handler();
+        startRepeatingTask();
         logText = findViewById(R.id.log_text);
         try {
             File logFile = new File(getExternalFilesDir(null), "log.txt");
