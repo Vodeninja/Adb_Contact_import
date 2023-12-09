@@ -3,8 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -15,6 +17,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Contact"
         tools:targetApi="31">
+        <activity
+            android:name=".import_contact"
+            android:exported="true" />
+        <activity
+            android:name=".remove_contact"
+            android:exported="true" />
+        <activity
+            android:name=".export_contact"
+            android:exported="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
